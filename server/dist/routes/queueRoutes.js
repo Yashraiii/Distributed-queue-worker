@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const queuecontroller_1 = require("../controllers/queuecontroller");
+const queueroute = (0, express_1.Router)();
+queueroute.post('/createjobs', queuecontroller_1.CreateJobs);
+queueroute.get('/metrics', queuecontroller_1.GetjobMetrics);
+queueroute.post('/jobs', queuecontroller_1.GetJobsList);
+queueroute.post('/jobs/:id/retry', queuecontroller_1.RetryJobController);
+exports.default = queueroute;
