@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev:api": "tsx watch src/index.ts",
-    "dev:worker": "tsx watch src/worker.ts"
+    "dev:worker": "tsx watch src/workers/taskworker.ts"
   },
   "keywords": [],
   "author": "",

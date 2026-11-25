@@ -1,27 +1,26 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const taskQueue_1 = require("./queues/taskQueue");
-const fun = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield taskQueue_1.taskQueue.add('process-payment', {
-        orderId: "order_999",
-        amount: 1000,
-        customerEmail: "raiyas2002@gmail.com"
+const http_1 = __importDefault(require("http"));
+const Port = 8000;
+const server = http_1.default.createServer((req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    let count = 0;
+    res.write(`data: ${JSON.stringify({ count })}\n\n`);
+    const interval = setInterval(() => {
+        count += 1;
+        console.log(count);
+        res.write(`data:${JSON.stringify({ count })}\n\n`);
+    }, 10000);
+    req.on('close', () => {
+        res.end();
+        console.log('Client disconnected');
     });
-    yield taskQueue_1.taskQueue.add('process-payment', {
-        orderId: "order_999",
-        amount: 1000,
-        customerEmail: "raiyas2002@gmail.com"
-    });
-    console.log("Both jobs added! Check your worker terminal.");
-    process.exit(0);
 });
-fun();
+server.listen(Port, () => {
+    console.log(`server is listening on the port${Port}`);
+});

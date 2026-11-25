@@ -49,7 +49,7 @@ exports.worker = new bullmq_1.Worker('task-queue', (job) => __awaiter(void 0, vo
             }
             console.log(`charging ${amount} for order ${orderId}(${customerEmail})...`);
             yield new Promise((res) => setTimeout(res, 1500));
-            console.log(` Payment of $${amount} captured for Order #${orderId}!`);
+            console.log(` Payment of ${amount} captured for Order #${orderId}!`);
             yield job.log(`Payment captured successfully for order #${orderId}`);
             break;
         default:

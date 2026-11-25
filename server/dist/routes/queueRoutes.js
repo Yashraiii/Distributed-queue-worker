@@ -7,4 +7,5 @@ queueroute.post('/createjobs', queuecontroller_1.CreateJobs);
 queueroute.get('/metrics', queuecontroller_1.GetjobMetrics);
 queueroute.post('/jobs', queuecontroller_1.GetJobsList);
 queueroute.post('/jobs/:id/retry', queuecontroller_1.RetryJobController);
+queueroute.get('/events', queuecontroller_1.StreamEvents);
 exports.default = queueroute;

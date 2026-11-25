@@ -1,20 +1,28 @@
-import { taskQueue } from "./queues/taskQueue";
+import express from 'express';
+import http from 'http'
 
-const fun =async()=>{
-    await taskQueue.add('process-payment',{
-        orderId:"order_999",
-        amount:1000,
-        customerEmail:"raiyas2002@gmail.com"
+const Port = 8000;
 
+const server = http.createServer((req,res)=>{
+    res.setHeader('Content-Type','text/event-stream');
+    res.setHeader('Cache-control','no-cache');
+    res.setHeader('Connection','keep-alive');
+    
+    let count = 0;
+    res.write(`data: ${JSON.stringify({ count })}\n\n`);
+    const interval =setInterval(()=>{
+        count+=1;
+        console.log(count);
+        res.write(`data:${JSON.stringify({count})}\n\n`);
+    },10000);
+    req.on('close',()=>{
+        clearInterval(interval)
+        res.end();
+        console.log('Client disconnected');
     })
-    await taskQueue.add('process-payment',{
-        orderId:"order_999",
-        amount:1000,
-        customerEmail:"raiyas2002@gmail.com"
-
-    })
-    console.log("Both jobs added! Check your worker terminal.");
-    process.exit(0);
-   
-}
-fun();
+    
+    
+})
+server.listen(Port,()=>{
+    console.log(`server is listening on the port${Port}`)
+})

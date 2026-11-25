@@ -17,7 +17,7 @@ const CreateJob = (type, data, delay) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.CreateJob = CreateJob;
 const GetQueueMetrics = () => __awaiter(void 0, void 0, void 0, function* () {
-    const count = yield taskQueue_1.taskQueue.getJobCounts('wait', 'active', 'completed', 'failed', 'delayed');
+    const count = yield taskQueue_1.taskQueue.getJobCounts('waiting', 'active', 'completed', 'failed', 'delayed');
     return count;
 });
 exports.GetQueueMetrics = GetQueueMetrics;

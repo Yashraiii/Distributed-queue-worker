@@ -7,7 +7,7 @@ import { queueEvents } from "../queues/queueEvents";
 let clients: Response[] = [];
 const sendTodashboard = (data:object)=>{
   clients.forEach((client)=>{
-    client.write(`data: ${JSON.stringify(data)}`)
+    client.write(`data: ${JSON.stringify(data)}\n\n`);
   })
 }
   queueEvents.on('completed',({jobId,returnvalue})=>{
@@ -118,7 +118,7 @@ export const StreamEvents = (req:Request,res:Response)=>{
   res.setHeader('Connection','keep-alive');
 
   clients.push(res);
-  res.write(`data ${JSON.stringify({type:'connected',message:'SSE Stream Open'})}`);
+  res.write(`data ${JSON.stringify({type:'connected',message:'SSE Stream Open'})}\n\n`);
   req.on('close',()=>{
     clients  = clients.filter((client)=>client!=res);
     console.log(`SSE client disconnected.Total active dashboards:${clients.length}`)

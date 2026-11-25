@@ -12,5 +12,5 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use('/api/queue', queueRoutes_1.default);
 app.listen(Port, () => {
-    `Server is listening port ${Port}`;
+    console.log(`Server is listening on port ${Port}`);
 });

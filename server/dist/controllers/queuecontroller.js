@@ -9,8 +9,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RetryJobController = exports.GetJobsList = exports.GetjobMetrics = exports.CreateJobs = void 0;
+exports.StreamEvents = exports.RetryJobController = exports.GetJobsList = exports.GetjobMetrics = exports.CreateJobs = void 0;
 const queueService_1 = require("../services/queueService");
+const queueEvents_1 = require("../queues/queueEvents");
+let clients = [];
+const sendTodashboard = (data) => {
+    clients.forEach((client) => {
+        client.write(`data: ${JSON.stringify(data)}\n\n`);
+    });
+};
+queueEvents_1.queueEvents.on('completed', ({ jobId, returnvalue }) => {
+    //broadcast to all clients;
+    sendTodashboard({ type: 'completed', jobId, returnvalue });
+});
+queueEvents_1.queueEvents.on('failed', ({ jobId, failedReason }) => {
+    //broadcast to all clients;
+    sendTodashboard({ type: 'failed', jobId, failedReason });
+});
+queueEvents_1.queueEvents.on('delayed', ({ delay, jobId }) => {
+    //broadcast to all clients;
+    sendTodashboard({ type: 'delayed', jobId, delay });
+});
+queueEvents_1.queueEvents.on('progress', ({ jobId, data }) => {
+    //broadcast to all clients;
+    sendTodashboard({ type: 'progress', jobId, progress: data });
+});
+queueEvents_1.queueEvents.on('active', ({ jobId }) => {
+    sendTodashboard({ type: 'active', jobId });
+});
+queueEvents_1.queueEvents.on('waiting', ({ jobId }) => {
+    sendTodashboard({ type: 'waiting', jobId });
+});
 const CreateJobs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { type, data, delay } = req.body;
@@ -93,3 +122,15 @@ const RetryJobController = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.RetryJobController = RetryJobController;
+const StreamEvents = (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    clients.push(res);
+    res.write(`data ${JSON.stringify({ type: 'connected', message: 'SSE Stream Open' })}\n\n`);
+    req.on('close', () => {
+        clients = clients.filter((client) => client != res);
+        console.log(`SSE client disconnected.Total active dashboards:${clients.length}`);
+    });
+};
+exports.StreamEvents = StreamEvents;
